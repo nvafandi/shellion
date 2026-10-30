@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import threading
 from typing import Any
@@ -11,7 +12,24 @@ from mcp.server.mcpserver import MCPServer
 
 mcp = MCPServer("shellion")
 
-DEFAULT_TIMEOUT = float(os.getenv("SSH_TIMEOUT", "15"))
+DEFAULT_TIMEOUT = 15.0
+
+
+def _credentials() -> dict[str, Any]:
+    """Load SSH defaults from a JSON file named by SSH_CREDENTIALS_FILE."""
+    path = os.getenv("SSH_CREDENTIALS_FILE")
+    if not path:
+        return {}
+    with open(os.path.expanduser(path), encoding="utf-8") as handle:
+        data = json.load(handle)
+    if not isinstance(data, dict):
+        raise ValueError("SSH_CREDENTIALS_FILE must contain a JSON object")
+    return data
+
+
+def _setting(env_key: str, creds: dict[str, Any], key: str, default: Any = None) -> Any:
+    """Environment wins over the credential file, so CI can override safely."""
+    return os.getenv(env_key) or creds.get(key) or default
 
 
 def _connection(
@@ -19,14 +37,20 @@ def _connection(
     port: int | None = None,
     username: str | None = None,
 ) -> paramiko.SSHClient:
-    """Open an SSH connection using env defaults plus optional overrides.
+    """Open an SSH connection using file/env defaults plus optional overrides.
 
-    Credentials come from the environment only, so they never appear in a
-    tool call or the model transcript.
+    Credentials come from the environment or the JSON credential file, so they
+    never appear in a tool call or the model transcript.
     """
-    resolved_host = host or os.getenv("SSH_HOST")
-    resolved_port = int(port or os.getenv("SSH_PORT", "22"))
-    resolved_user = username or os.getenv("SSH_USER") or os.getenv("USER")
+    creds = _credentials()
+    resolved_host = host or _setting("SSH_HOST", creds, "host")
+    resolved_port = int(port or _setting("SSH_PORT", creds, "port", 22))
+    resolved_user = (
+        username
+        or _setting("SSH_USER", creds, "username")
+        or creds.get("user")
+        or os.getenv("USER")
+    )
 
     if not resolved_host:
         raise ValueError("SSH_HOST is not set")
@@ -34,7 +58,7 @@ def _connection(
         raise ValueError("SSH_USER is not set")
 
     client = paramiko.SSHClient()
-    known_hosts = os.getenv("SSH_KNOWN_HOSTS")
+    known_hosts = _setting("SSH_KNOWN_HOSTS", creds, "known_hosts")
     if known_hosts:
         client.load_host_keys(os.path.expanduser(known_hosts))
     else:
@@ -46,16 +70,16 @@ def _connection(
         "hostname": resolved_host,
         "port": resolved_port,
         "username": resolved_user,
-        "timeout": DEFAULT_TIMEOUT,
+        "timeout": float(_setting("SSH_TIMEOUT", creds, "timeout", DEFAULT_TIMEOUT)),
     }
-    key_path = os.getenv("SSH_KEY_PATH")
+    key_path = _setting("SSH_KEY_PATH", creds, "key_path")
     if key_path:
         kwargs["key_filename"] = os.path.expanduser(key_path)
-        passphrase = os.getenv("SSH_KEY_PASSPHRASE")
+        passphrase = _setting("SSH_KEY_PASSPHRASE", creds, "key_passphrase")
         if passphrase:
             kwargs["passphrase"] = passphrase
     else:
-        kwargs["password"] = os.getenv("SSH_PASSWORD")
+        kwargs["password"] = _setting("SSH_PASSWORD", creds, "password")
 
     client.connect(**kwargs)
     return client

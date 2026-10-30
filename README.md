@@ -20,7 +20,33 @@ pip install -r requirements.txt
 
 ## Configure
 
-Set credentials as environment variables. Use either a password or a key.
+Credentials can come from a JSON file or environment variables.
+
+### JSON credential file
+
+Copy `ssh_credential.example.json` to a private path and point
+`SSH_CREDENTIALS_FILE` at it:
+
+```json
+{
+  "host": "103.119.237.114",
+  "port": 20136,
+  "username": "nurvan",
+  "password": "change-me"
+}
+```
+
+```bash
+SSH_CREDENTIALS_FILE=C:\Users\nurvan\Documents\ssh_credential.json
+```
+
+The file may use `password` or `key_path` / `key_passphrase`, plus optional
+`known_hosts` and `timeout`. Keep the real file out of Git and restrict its
+permissions (`chmod 600` on Linux/macOS).
+
+Environment variables override values from the file, which is useful for CI.
+
+### Environment variables
 
 ```bash
 SSH_HOST=103.119.237.114
@@ -59,10 +85,7 @@ The server speaks MCP over stdio, which is what most MCP clients expect.
       "command": "python",
       "args": ["C:/Users/nurvan/Documents/project/shellion/server.py"],
       "env": {
-        "SSH_HOST": "example.com",
-        "SSH_PORT": "22",
-        "SSH_USER": "root",
-        "SSH_PASSWORD": "change-me"
+        "SSH_CREDENTIALS_FILE": "C:/Users/nurvan/Documents/ssh_credential.json"
       }
     }
   }
@@ -72,4 +95,5 @@ The server speaks MCP over stdio, which is what most MCP clients expect.
 ## Tools
 
 You can override `host`, `port` and `username` per call. Credentials are read
-from the environment only, so they do not end up in tool calls.
+from the environment or the JSON credential file, so they do not end up in tool
+calls.
