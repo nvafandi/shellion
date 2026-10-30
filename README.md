@@ -1,7 +1,7 @@
 <p align="center">
-  <img src="assets/title.svg" alt="Shellion" width="360" align="middle" />
-  &nbsp;&nbsp;
   <img src="assets/icon.jpg" alt="Shellion icon" width="120" align="middle" />
+  &nbsp;&nbsp;
+  <img src="assets/title.svg" alt="Shellion" width="360" align="middle" />
 </p>
 
 <p align="center"><strong>SSH access for AI agents over MCP</strong></p>
