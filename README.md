@@ -1,4 +1,9 @@
-# Shellion
+<div align="center">
+  <img src="assets/icon.jpg" alt="Shellion icon" width="180" />
+  <br />
+  <img src="assets/title.svg" alt="Shellion" width="420" />
+  <p><strong>SSH access for AI agents over MCP</strong></p>
+</div>
 
 A small [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server
 that gives AI agents SSH access through [Paramiko](https://www.paramiko.org/).
@@ -229,6 +234,8 @@ Project layout:
 ```text
 server.py                  MCP server and SSH tools
 ssh_credential.example.json  Example credential file
+assets/icon.jpg            README icon
+assets/title.svg           README wordmark
 tests/test_server.py       Unit tests
 requirements.txt           Runtime dependencies
 LICENSE                    MIT license
