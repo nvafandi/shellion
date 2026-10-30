@@ -1,9 +1,15 @@
-<div align="center">
-  <img src="assets/icon.jpg" alt="Shellion icon" width="180" />
-  <br />
-  <img src="assets/title.svg" alt="Shellion" width="420" />
-  <p><strong>SSH access for AI agents over MCP</strong></p>
-</div>
+<table width="100%">
+  <tr>
+    <td align="left" valign="middle">
+      <img src="assets/title.svg" alt="Shellion" width="360" />
+      <br />
+      <strong>SSH access for AI agents over MCP</strong>
+    </td>
+    <td align="right" valign="middle">
+      <img src="assets/icon.jpg" alt="Shellion icon" width="150" />
+    </td>
+  </tr>
+</table>
 
 A small [Model Context Protocol](https://modelcontextprotocol.io/) (MCP) server
 that gives AI agents SSH access through [Paramiko](https://www.paramiko.org/).
