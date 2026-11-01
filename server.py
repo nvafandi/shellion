@@ -36,6 +36,7 @@ def _connection(
     host: str | None = None,
     port: int | None = None,
     username: str | None = None,
+    device: str | None = None,
 ) -> paramiko.SSHClient:
     """Open an SSH connection using file/env defaults plus optional overrides.
 
@@ -43,6 +44,11 @@ def _connection(
     never appear in a tool call or the model transcript.
     """
     creds = _credentials()
+    device_name = device or os.getenv("SSH_DEVICE")
+    if device_name and isinstance(creds.get("devices"), dict):
+        creds = creds["devices"].get(device_name, {})
+    elif device_name and isinstance(creds.get(device_name), dict):
+        creds = creds[device_name]
     resolved_host = host or _setting("SSH_HOST", creds, "host")
     resolved_port = int(port or _setting("SSH_PORT", creds, "port", 22))
     resolved_user = (
@@ -91,10 +97,11 @@ def run_command(
     host: str | None = None,
     port: int | None = None,
     username: str | None = None,
+    device: str | None = None,
     timeout: float = 60.0,
 ) -> str:
     """Run a shell command over SSH and return stdout, stderr and exit code."""
-    client = _connection(host, port, username)
+    client = _connection(host, port, username, device)
     try:
         _, stdout, stderr = client.exec_command(command, timeout=timeout)
         # Read both streams concurrently; a full stderr pipe can otherwise
@@ -127,9 +134,10 @@ def upload_file(
     host: str | None = None,
     port: int | None = None,
     username: str | None = None,
+    device: str | None = None,
 ) -> str:
     """Upload a local file to the remote host with SFTP."""
-    client = _connection(host, port, username)
+    client = _connection(host, port, username, device)
     try:
         sftp = client.open_sftp()
         sftp.put(os.path.expanduser(local_path), remote_path)
@@ -146,9 +154,10 @@ def download_file(
     host: str | None = None,
     port: int | None = None,
     username: str | None = None,
+    device: str | None = None,
 ) -> str:
     """Download a remote file to the local machine with SFTP."""
-    client = _connection(host, port, username)
+    client = _connection(host, port, username, device)
     try:
         sftp = client.open_sftp()
         sftp.get(remote_path, os.path.expanduser(local_path))
