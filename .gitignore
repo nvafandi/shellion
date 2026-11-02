@@ -5,3 +5,4 @@ __pycache__/
 .env
 *credential*.json
 !ssh_credential.example.json
+!ssh_credentials.example.json

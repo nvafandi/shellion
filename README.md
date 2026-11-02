@@ -154,10 +154,10 @@ Example for an MCP client that reads `mcpServers` JSON:
 {
   "mcpServers": {
     "shellion": {
-      "command": "C:/Users/nurvan/Documents/project/shellion/.venv/Scripts/python.exe",
-      "args": ["C:/Users/nurvan/Documents/project/shellion/server.py"],
+      "command": "C:/path/to/shellion/.venv/Scripts/python.exe",
+      "args": ["C:/path/to/shellion/server.py"],
       "env": {
-        "SSH_CREDENTIALS_FILE": "C:/Users/nurvan/Documents/ssh_credential.json"
+        "SSH_CREDENTIALS_FILE": "~/.ssh/shellion.json"
       }
     }
   }
@@ -167,7 +167,7 @@ Example for an MCP client that reads `mcpServers` JSON:
 On Linux or macOS, use the venv Python path instead:
 
 ```json
-"command": "/home/nurvan/Documents/project/shellion/.venv/bin/python"
+"command": "/home/you/path/to/shellion/.venv/bin/python"
 ```
 
 ## Tools
