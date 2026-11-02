@@ -230,6 +230,23 @@ pip install -r requirements.txt
 python -m unittest discover -s tests -v
 ```
 
+### Testing with the driver
+
+`tools/mcp_driver.js` is a small stdio MCP client so the server can be
+exercised without an AI agent:
+
+```bash
+node tools/mcp_driver.js list
+node tools/mcp_driver.js run "uptime"
+node tools/mcp_driver.js run --device server "uptime"
+node tools/mcp_driver.js upload ./file.txt /tmp/file.txt
+node tools/mcp_driver.js download /tmp/file.txt ./file.txt
+```
+
+It starts `server.py` with the repository's venv (override with
+`SHELLION_PYTHON` and `SHELLION_SERVER`) and passes `SSH_CREDENTIALS_FILE`
+through to the server.
+
 Project layout:
 
 ```text
@@ -238,6 +255,7 @@ ssh_credential.example.json  Example credential file
 assets/icon.jpg            README icon
 assets/title.svg           README wordmark
 tests/test_server.py       Unit tests
+tools/mcp_driver.js        Dev MCP client for testing the server
 requirements.txt           Runtime dependencies
 LICENSE                    MIT license
 ```
