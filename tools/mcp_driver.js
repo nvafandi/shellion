@@ -28,7 +28,9 @@ const PY = process.env.SHELLION_PYTHON
               process.platform === 'win32' ? 'python.exe' : 'python');
 const SERVER = process.env.SHELLION_SERVER || path.join(REPO, 'server.py');
 const CRED = process.env.SSH_CREDENTIALS_FILE
-  || [path.join(os.homedir(), 'Documents', 'ssh_credential.json')].find(p => fs.existsSync(p))
+  || [path.join(os.homedir(), 'Documents', 'ssh_credential.json'),
+      path.join(os.homedir(), 'Documents', 'ssh_credentials.json'),
+      path.join(os.homedir(), '.ssh', 'shellion.json')].find(p => fs.existsSync(p))
   || undefined;
 
 const argv = process.argv.slice(2);
